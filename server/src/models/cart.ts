@@ -1,26 +1,26 @@
-import { model, ObjectId, Schema } from "mongoose";
+import {Document, model, Schema, Types } from "mongoose";
 
 interface CartItem {
-  product: ObjectId;
+  product: Types.ObjectId;
   quantity: number;
 }
 
-interface CartDocument {
-  userId: ObjectId;
+export interface CartDocument extends Document {
+  userId: Types.ObjectId;
   items: CartItem[];
 }
 
 const cartSchema = new Schema<CartDocument>(
   {
     userId: {
-      type: Schema.Types.ObjectId,
+      type:  Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     items: [
       {
         product: {
-          type: Schema.Types.ObjectId,
+          type:  Schema.Types.ObjectId,
           ref: "Book",
           required: true,
         },

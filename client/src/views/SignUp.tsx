@@ -9,6 +9,20 @@ import { Button, Input } from "@heroui/react";
 const emailRegex = new RegExp(
   "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$"
 );
+
+
+    const Background = ({ children }: { children: React.ReactNode }) => (
+    <div className="relative flex-1 flex items-center justify-center min-h-screen overflow-hidden
+                     bg-[#f8fafc] dark:bg-[#030303] px-4 transition-colors duration-500">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-[10%] -right-[10%] h-96 w-96 rounded-full
+                        bg-blue-500/10 blur-[120px] dark:bg-cyan-500/20" />
+        <div className="absolute -bottom-[10%] -left-[10%] h-96 w-96 rounded-full
+                        bg-purple-500/10 blur-[120px] dark:bg-indigo-500/20" />
+      </div>
+      {children}
+    </div>
+  ); 
 export default function SignUp() {
   const [email, setEmail] = useState("");
   const [invalidForm, setInvalidForm] = useState(false);
@@ -35,43 +49,73 @@ export default function SignUp() {
   }
   //error cors policy fixed in 
 
-  
-  if(showSuccessResponse)return (
-    <div className="flex-1 flex flex-col items-center justify-center md:p-0 p-4" >
-      <RiMailCheckLine size={80} className="animate-bounce"/>
-      <p className="text-lg text-center"> Please check your email we just send you a link</p>
-      <p className="font-semibold">
-       If you are a new user then it may take some time to show up main inside your inbox, so have patience. 
-      </p>
-
-
-    </div>
-
-  )
-  return(
-    <div className="flex-1 flex items-center justify-center ">
-       <div className="flex flex-col items-center justify-center w-96 border-2 border-slate-400 dark:border-slate-50  p-5 rounded-xl">
-        <Book className="w-44 h-44" />
-        <h1 className="text-center text-xl font-semibold">
-          Books are the keys to countless doors. Sign up and unlock your potential. 
+ 
+  if (showSuccessResponse)
+    return (
+      <Background>
+        <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-sm
+                         rounded-2xl border border-black/5 dark:border-white/10
+                         bg-white/70 dark:bg-white/5 backdrop-blur-xl shadow-2xl p-8">
+          <div className="relative">
+            <div className="absolute inset-0 blur-2xl bg-cyan-500/30 rounded-full" />
+            <RiMailCheckLine size={64} className="relative text-cyan-500 animate-bounce" />
+          </div>
+          <p className="text-lg font-semibold mt-4 text-slate-900 dark:text-white">
+            Check your inbox
+          </p>
+          <p className="text-sm mt-2 text-slate-500 dark:text-slate-400">
+            We've sent a verification link to your email. New users — it may take a moment to arrive, so have patience.
+          </p>
+        </div>
+      </Background>
+    );
+ 
+  return (
+    <Background>
+      <div className="relative z-10 w-full max-w-sm rounded-2xl overflow-hidden
+                       border border-black/5 dark:border-white/10
+                       bg-white/70 dark:bg-white/5
+                       backdrop-blur-xl shadow-2xl p-7
+                       flex flex-col items-center">
+ 
+        <Book className="w-32 h-32 dark:drop-shadow-[0_0_20px_rgba(34,211,238,0.25)]" />
+ 
+        <h1 className="text-center text-xl font-bold tracking-tight mt-2
+                       text-slate-900 dark:text-transparent dark:bg-clip-text
+                       dark:bg-linear-to-br dark:from-white dark:to-slate-400">
+          Books are the keys to countless doors.
         </h1>
+        <p className="text-center text-sm text-slate-500 dark:text-cyan-100/50 mt-1">
+          Sign up and unlock your potential.
+        </p>
+ 
         <form onSubmit={handleSubmit} className="w-full space-y-4 mt-6">
           <Input
-          
-           placeholder="xyz@email.com"
-           variant="bordered"
-           isInvalid={invalidForm}
+            placeholder="xyz@email.com"
+            variant="bordered"
+            isInvalid={invalidForm}
             value={email}
-            onChange={(e) => setEmail(e.target.value)}  
-            errorMessage={invalidForm? "Please enter a valid email address" : undefined}
-            className="border-2 border-slate-500 rounded-xl "
+            onChange={(e) => setEmail(e.target.value)}
+            errorMessage={invalidForm ? "Please enter a valid email address" : undefined}
+            classNames={{
+              inputWrapper:
+                "border-black/10 dark:border-white/10 data-[hover=true]:border-cyan-500/50 group-data-[focus=true]:!border-cyan-500",
+            }}
           />
-          <Button isLoading={busy} type="submit" className="w-full bg-slate-400 rounded-xl text-slate-100 ">Send me the link</Button>
+          <Button
+            isLoading={busy}
+            type="submit"
+            radius="lg"
+            className="w-full font-medium
+                       bg-slate-900 text-white
+                       dark:bg-linear-to-r dark:from-cyan-500 dark:to-indigo-500 dark:text-white
+                       hover:opacity-90 transition-opacity"
+          >
+            Send me the link
+          </Button>
         </form>
-       </div>
-
-    </div>
-
+      </div>
+    </Background>
   )
 }
 

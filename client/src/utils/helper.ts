@@ -46,9 +46,9 @@ export const calculateDiscount = (price: { mrp: string; sale: string }) => {
 };
 
 export const formatPrice = (amount: number) => {
-  const formatter = new Intl.NumberFormat("en-US", {
+  const formatter = new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
   });
 
   return formatter.format(amount);
@@ -58,11 +58,12 @@ export const debounce = <T extends unknown[]>(
   func: (...args: T) => void,
   time: number
 ) => {
-  let timeoutId: number;
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
   return (...args: T) => {
-    // clearing the previous timeout (invalidates the previous function call)
-    clearTimeout(timeoutId);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
 
     // registers the new timeout (registers the new function to call after the given time)
     timeoutId = setTimeout(() => {

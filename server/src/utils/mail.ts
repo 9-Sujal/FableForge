@@ -29,18 +29,25 @@ const sendVerificationMailProd = async (options: VerificationMailOptions) => {
 }
 
 const sendVerificationTestMail = async (options: VerificationMailOptions) => {
-    console.log("📨 Sending mail via Mailtrap...");
-    await transport.sendMail({
-        to:options.to,
-        from: process.env.VERIFICATION_MAIL, 
-        subject:"auth verification",
-        html:`
-        <p>Click the link below to login to your account</p>
-        <a href=${options.link}>Login to your account</a>
-        `,
-    })
-    console.log("📨 Sending mail via Mailtrap...");
-}
+  console.log("📨 Sending mail via Mailtrap...");
+
+  await transport.sendMail({
+    to: options.to,
+    from: process.env.VERIFICATION_MAIL,
+    subject: "Set your password",
+    html: `
+      <h2>Welcome to our app 👋</h2>
+      <p>Click the button below to set your password:</p>
+      <a href="${options.link}" 
+         style="padding:10px 20px; background:#4CAF50; color:white; text-decoration:none;">
+         Set Password
+      </a>
+      <p>This link will expire in 24 hours.</p>
+    `,
+  });
+console.log("Verification Link:", options.link);
+  console.log("✅ Mail sent");
+};
 
 
 // here we will write the code to send email in production and development both.

@@ -1,6 +1,7 @@
 import { createSelector, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from ".";
-import { Book } from "../components/BookDetail";
+import type { Book } from "../components/BookDetail";
+
 
 export type cartItem =
   | {
@@ -18,8 +19,7 @@ export type cartItem =
     cover?: string;
     price: {
       mrp: string;
-      sale: string;
-    };
+      sale: string;   };
   };
 }
 

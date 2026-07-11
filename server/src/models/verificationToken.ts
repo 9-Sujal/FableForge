@@ -13,7 +13,7 @@ import {Model, Schema, model} from "mongoose";
 import { hashSync, compareSync, genSaltSync } from "bcrypt"
 
 interface VerificationToken{
-    userId:string; 
+    email:string; 
     token: string; 
     expires:Date; 
 }
@@ -29,9 +29,9 @@ type VerificationTokenModel = Model<
 >;
 
 const verificationTokenSchema = new Schema<VerificationToken, VerificationTokenModel, Methods>({
-   userId:{type:String, required: true},
+   email:{index:1, type:String, required: true},
    token: {type:String, required: true},
-   expires:{type: Date, default: Date.now(), expires:60*60*24, },
+   expires:{type: Date, default: Date.now, expires:60*60*24, },
 }); 
 
 //pre save hook to when the document will be saved this function will run
@@ -44,13 +44,25 @@ const verificationTokenSchema = new Schema<VerificationToken, VerificationTokenM
 // this will add a method to our model to compare the token
 // we will use this method to compare the token when user will try to verify the token.
 
-verificationTokenSchema.pre("save", async function(next: any){
-    if(this.isModified("token")){
-        const salt = genSaltSync(10); // it will take 10 rounds to generate salt or password
-        this.token = hashSync(this.token, salt); // it will hash the token with the salt and save the hashed token in database.
+// verificationTokenSchema.pre("save", async function(next: any){
+//     if(this.isModified("token")){
+//         const salt = genSaltSync(10); // it will take 10 rounds to generate salt or password
+//         this.token = hashSync(this.token, salt); // it will hash the token with the salt and save the hashed token in database.
+//     }
+
+//     next; 
+    
+// })
+verificationTokenSchema.pre("save", function (next: any) {
+    if (!this.isModified("token")) {
+        return next;
     }
-    next(); 
-})
+
+    const salt = genSaltSync(10);
+    this.token = hashSync(this.token, salt);
+
+    next;
+});
 
 // custom method to compare at time of login. 
 /* flow

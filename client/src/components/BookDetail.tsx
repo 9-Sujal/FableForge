@@ -1,6 +1,6 @@
-import { useState } from "react";
+
 import useAuth from "../hooks/useAuth";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 import {
   FaEarthAfrica,
   FaMasksTheater,
@@ -12,7 +12,10 @@ import { Button, Chip, Divider } from "@heroui/react";
 import clsx from "clsx";
 import { TbShoppingCartPlus } from "react-icons/tb";
 import client from "../api/client";
-import { calculateDiscount, formatPrice, parseError } from "../utils/helper";
+import { calculateDiscount, formatPrice, parseError} from "../utils/helper";
+import RichEditor from "./rich-editor";
+import { useState } from "react";
+import useCart from "../hooks/useCart";
 
 
 
@@ -51,6 +54,8 @@ export default function BookDetail({book}:BookProps) {
 
     const [busy, setBusy] = useState(false);
     const {updateCart, pending} = useCart(); 
+
+  ;
     const {profile} = useAuth(); 
     const navigate = useNavigate(); 
 
@@ -59,6 +64,7 @@ export default function BookDetail({book}:BookProps) {
     const alreadyPurchased = profile?.books?.includes(book.id) || false; 
 
     const handleCartUpdate = () =>{
+       
         updateCart({product:book, quantity: 1}); 
 
     }
@@ -200,15 +206,15 @@ export default function BookDetail({book}:BookProps) {
           {alreadyPurchased ? (
             <Button
               radius="sm"
+              className="bg-slate-200 dark:bg-slate-500 rounded-4xl "
               as={Link}
               to={`/read/${slug}?title=${title}&id=${id}`}
             >
               Read Now
             </Button>
           ) : (
-            <>
-              <Button
-                onClick={handleCartUpdate}
+            <>       <Button
+                onPress={handleCartUpdate}
                 variant="light"
                 isLoading={pending || busy}
                 startContent={<TbShoppingCartPlus />}
@@ -218,15 +224,17 @@ export default function BookDetail({book}:BookProps) {
                 Add to Cart
               </Button>
               <Button
-                onClick={handleBuyNow}
+                onPress={handleBuyNow}
                 isLoading={pending || busy}
                 variant="flat"
                 disabled={notAllowed}
                 className={clsx(notAllowed && "cursor-not-allowed")}
               >
                 Buy Now
-              </Button>
-            </>
+              </Button>  </>
+           
+         
+            
           )}
         </div>
       </div>

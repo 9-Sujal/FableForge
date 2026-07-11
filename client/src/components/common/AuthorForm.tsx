@@ -4,8 +4,9 @@ import { MdClose, MdOutlineAdd } from "react-icons/md";
 import { z } from "zod";
 import useAuth from "../../hooks/useAuth";
 import { parseError } from "../../utils/helper";
-import RichEditor from "../rich-editor";
+
 import ErrorList from "./ErrorList";
+import RichEditor from "../rich-editor";
 
 
 export interface AuthorInfo {

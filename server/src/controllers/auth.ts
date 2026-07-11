@@ -2,52 +2,74 @@ import { Request,Response,RequestHandler  } from "express";
 import crypto from 'crypto'
 import UserModel from "@/models/user";
 import VerificationTokenModel from "@/models/verificationToken";
+import { formatUserProfile, sendErrorResponse } from "@/utils/helper";
+
+
+import jwt from "jsonwebtoken";
+// import { PutObjectCommand } from "@aws-sdk/client-s3";
+
+import { updateAvatarToAws } from "@/utils/fileIpload";
+
 
 import mail from "@/utils/mail";
+import slugify from "slugify"
 
-export const generateAuthLink: RequestHandler = async (req: Request, res: Response) => {
+export const tryCatch = (handler: RequestHandler): RequestHandler => {
+  return async (req, res, next) => {
+    try {
+      await handler(req, res, next);
+    } catch (error) {
+      next(error);
+    }
+  };
+};
+
+
+export const generateAuthLink: RequestHandler =tryCatch (async (req: Request, res: Response) => {
    
    const {email} = req.body; 
 
    // bringing user from database if exist otherwise create a new user with that email.
-   let user = await UserModel.findOne({email}); 
-   if(!user){
-      user = await UserModel.create({email}); 
+   const existingUser = await UserModel.findOne({ email });
+   if (existingUser) {
+    return sendErrorResponse({
+        res,
+        status: 409,
+        message: "Email already registered",
+    });
+}
+  //  if(!user){
+  //     user = await UserModel.create({email}); 
 
-   }
+  //  }
 
-   const userId = user._id.toString();
+ await VerificationTokenModel.findOneAndDelete({ email });
 
-   //if we alre/.ady have tokem for this user it will remove that first. 
-   await VerificationTokenModel.findOneAndDelete({userId}); 
-  
+const token = crypto.randomBytes(36).toString("hex");
 
-   //generate token and save in database.
-   const randomToken = crypto.randomBytes(36).toString("hex");  
+await VerificationTokenModel.create({
+    email,
+    token,
+});
 
-
-   await VerificationTokenModel.create({
-      userId: user._id.toString(),
-      token: randomToken,
-
-   })
+   
 
    //creating link 
 
 // Looking to send emails in production? Check out our Email API/SMTP product!
 
 
-const link = `${process.env.VERIFICATION_LINK}?token=${randomToken}&id=${user._id.toString()}`;
+const link = `${process.env.VERIFICATION_LINK}?email=${encodeURIComponent(email)}&token=${token}`;
 
 await mail.sendVerificationMail({
    link,
    to: email,
-   name: user.name || user.email
+   name: email,
 })
 
 res.json({message:"Verification link has been sent to your email address. Please check your email and click the link to login."});
 
-}
+})
 
 
 // in this 
@@ -57,10 +79,6 @@ res.json({message:"Verification link has been sent to your email address. Please
 // notify user to look inside the email to get the login link. 
 
 
-import { formatUserProfile, sendErrorResponse } from "@/utils/helper";
-
-
-import jwt from "jsonwebtoken";
 
 declare global {
   namespace Express {
@@ -82,9 +100,14 @@ declare global {
 // in this file we will verify the token which is sent to user email and also check if that token is valid or not.
 // if the token is valid then we will generate a new token for user and send it to client and also delete the token from database.
 
-export const verifyAuthToken: RequestHandler = async (req, res) =>{
-    const {token, id: userId} = req.query;
-    if(typeof token !== "string" || typeof userId !== "string"){
+export const verifyAuthToken: RequestHandler = tryCatch(async (req, res) =>{
+    const {token, email} = req.query;
+     console.log("🔍 Verify API hit");
+  console.log("Token:", token);
+  console.log("email", email);
+    
+
+    if(typeof token !== "string" || typeof email !== "string"){
             return sendErrorResponse({
                 status:400,
                 message:"Invalid request",
@@ -93,55 +116,165 @@ export const verifyAuthToken: RequestHandler = async (req, res) =>{
             })
     }
  
-     const verificationToken = await VerificationTokenModel.findOne({userId}); 
+     const verificationToken = await VerificationTokenModel.findOne({email}); 
 
-     if(!verificationToken || verificationToken.compare(token)){
+  console.log("DB Token:", verificationToken?.token);
+     
+     if(!verificationToken || !verificationToken.compare(token)){
+      console.log("❌ Token mismatch or not found");
         return sendErrorResponse({
             status:403,
-            message:"invalid request",
+            message:"invalid token or expired token",
             res,
         })
      }
-   
+     console.log("✅ Token verified successfully for emailid:", email, token);
 
-     const user = await UserModel.findById(userId); 
-     if(!user){
-        return sendErrorResponse({
-            status:500,
-            message:"User not found",
-            res,
-        }); 
-     }
+     return res.json({
+    message: "Token valid",
+    email,
+    token,
+  });
+    //  const user = await UserModel.findById(email); 
+    //  if(!user){
+    //     return sendErrorResponse({
+    //         status:500,
+    //         message:"User not found",
+    //         res,
+    //     }); 
+    //  }
 
-     await VerificationTokenModel.findByIdAndDelete(verificationToken._id); 
+    //  await VerificationTokenModel.findByIdAndDelete(verificationToken._id); 
 
     //  todo authentication
+    
 
-    const payload = {userId: user._id}; // payload for token generation
+    // const payload = {userId: user._id}; // payload for token generation
 
-    const authToken = jwt.sign(payload, process.env.JWT_SECRET!,{
-        expiresIn:"15d", 
+    // const authToken = jwt.sign(payload, process.env.JWT_SECRET!,{
+    //     expiresIn:"15d", 
+    // })
+
+    // const isDevModeOn = process.env.NODE_ENV === "development";
+    // res.cookie("authToken", authToken,{
+    //     httpOnly:true,
+    //     secure: !isDevModeOn, 
+    //     sameSite: isDevModeOn ? "strict" : "none", 
+    //     maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
+    // }); 
+// res.cookie("authToken", authToken, {
+//   httpOnly: true,
+//   secure: false,       
+//   sameSite: "lax",    
+//   maxAge: 15 * 24 * 60 * 60 * 1000,
+// });
+//     res.redirect(
+//         `${process.env.AUTH_SUCCESS_URL}?profile=${JSON.stringify(formatUserProfile(user))}`
+//     );
+
+
+}
+)
+
+export const setPassword: RequestHandler = tryCatch(async(req, res) =>{
+  const {email, token, password} = req.body; 
+  console.log("🔍 Set Password API hit");
+
+  const verificationToken = await VerificationTokenModel.findOne({email});
+  if(!verificationToken || !verificationToken.compare(token)){
+   
+    return sendErrorResponse({
+      status:403,
+      message:"invalid token or expired token",
+      res,
+    })
+  }
+
+  const existingUser = await UserModel.findOne({email}); 
+if (existingUser) {
+  return sendErrorResponse({
+    res,
+    status: 409,
+    message: "User already exists",
+  });
+}
+const user = await UserModel.create({
+  email,
+  password,
+  signedUp: true,
+});
+
+  await VerificationTokenModel.deleteOne(verificationToken._id);  
+
+
+  res.json({
+    message:"Password set successfully. You can now login with your password.",
+  })
+
+
+  
+})
+
+
+export const login: RequestHandler = tryCatch(async(req, res) =>{
+  const {email, password} = req.body;
+  console.log("🔍 Login API hit with email:", email);
+
+  const user = await UserModel.findOne({email});
+
+  if(!user || !user.password){
+
+    return sendErrorResponse({
+      status:404,
+      message:"User not found or password not set",
+      res,
+    })
+  
+  
+  }
+  const isMatch = await user.comparePassword(password);
+  
+  if(!isMatch){
+  
+    return sendErrorResponse({
+      status:401,
+      message:"Incorrect password",
+      res,
     })
 
-    const isDevModeOn = process.env.NODE_ENV === "development";
-    res.cookie("authToken", authToken,{
-        httpOnly:true,
-        secure: !isDevModeOn, 
-        sameSite: isDevModeOn ? "strict" : "none", 
-        maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
-    }); 
+  }
+ 
+  const token = jwt.sign(
+    {userId: user._id.toString()},
+    process.env.JWT_SECRET!,
+    {expiresIn:"15d"}
+  );
 
-    res.redirect(
-        `${process.env.AUTH_SUCCESS_URL}?profile=${JSON.stringify(formatUserProfile(user))}`
-    );
+  res.cookie("authToken", token, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+
+  })
+
+  res.json({
+    message:"Login successful",
+   
+  })
+
+}
+)
 
 
-};
 export const sendProfileInfo: RequestHandler = (req, res) => {
   res.json({
     profile: req.user,
   });
-};
+}
+
+
+
+
 
 // in the below code we will clear the cookie which is set for authentication and logout the user.
 // we will also check if the user is in development mode or not and set the cookie accordingly. if we are in development mode we
@@ -161,22 +294,49 @@ export const logout: RequestHandler = (req, res) => {
     .send();
 };
 
-export const updateProfile: RequestHandler = async (req, res) => {
-      const user =  await UserModel.findByIdAndUpdate(req.user.id, {
-        name: req.body.name,
-        signedUp: true,
-      },
-      {new:true});
+export const updateProfile: RequestHandler = tryCatch(async (req, res) => {
+  console.log("BODY:", req.body);
+console.log("FILES:", req.files);
+  const user = await UserModel.findByIdAndUpdate(
+    req.user.id,
+    {
+      name: req.body.name,
+      signedUp: true,
+    },
+    {
+      new: true,
+    }
+  );
 
-      if(!user){
-        return sendErrorResponse({
-            res,
-            message:"User not found",
-            status:404,
-        }); 
+  if (!user)
+    return sendErrorResponse({
+      res,
+      message: "Something went wrong user not found!",
+      status: 500,
+    });
 
-        //if there is any file upload them to cloud and update the database.
+  // if there is any file upload them to cloud and update the database
+  const file = req.files.avatar;
+  if (file && !Array.isArray(file)) {
+    // if you are using cloudinary this is the method you should use
+    // user.avatar = await updateAvatarToCloudinary(file, user.avatar?.id);
 
-        
-      }
+    // if you are using aws this is the method you should use
+    const uniqueFileName = `${user._id}-${slugify(req.body.name, {
+      lower: true,
+      replacement: "-",
+    })}.png`;
+    user.avatar = await updateAvatarToAws(
+      file as any,
+      uniqueFileName,
+      user.avatar?.id
+    );
+
+    await user.save();
+  console.log("BODY:", req.body);
+console.log("FILES:", req.files);
+  }
+
+  res.json({ profile: formatUserProfile(user) });
 }
+)

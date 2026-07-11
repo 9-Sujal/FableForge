@@ -6,6 +6,7 @@ import { useEffect } from "react";
 
 
 
+
 interface AuthProviderProps {
     children: React.ReactNode;
 }
@@ -29,9 +30,9 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     useEffect(()=>{
         client
            .get("/auth/profile")
-           .then(()=>{   
+           .then((res)=>{   
             dispatch(updateAuthStatus("authenticated")); 
-            dispatch(updateProfile(null));
+             dispatch(updateProfile(res.data.profile)); 
            })
            .catch(()=>{
             dispatch(updateAuthStatus("unauthenticated")); 

@@ -48,13 +48,14 @@ export default function DarkModeSwitch() {
      <Switch
      size="sm"
      color="success"
+     isSelected={darkMode}
     startContent = {<IoSunnyOutline/>}
     endContent = {<IoMoon/>}
     onChange={(e)=>{
         const {checked} = e.target; 
         if(checked) enableDarkMode(); 
         else disabledDarkMode(); 
-        setDarkMode(checked); 
+       
     }}
      />
   )

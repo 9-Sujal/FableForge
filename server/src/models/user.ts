@@ -3,24 +3,33 @@ user should have id, email, role, name, signedUp(true false), avatar,
 author id, books, orders......
 */
 
-import { model, ObjectId, Schema } from "mongoose";
+import { Model, model, Types, Schema } from "mongoose";
+import { hashSync, compareSync, genSaltSync } from "bcrypt";
 
 export interface UserDoc {
-    _id: ObjectId;
+    _id: Types.ObjectId;
     email: string; 
+    password: string;
     role: 'user' | 'author' ;
     name?:string; 
     signedUp:boolean; 
     avatar?:{url:string; id: string}; 
-    authorId?: ObjectId; 
-    books: ObjectId[];
-    orders?: ObjectId[]; 
+    authorId?: Types.ObjectId; 
+    books: Types.ObjectId[];
+    orders?: Types.ObjectId[]; 
 
 }
+interface UserMethods {
+    comparePassword(password: string): boolean;
+}
 
-const userSchema = new Schema<UserDoc>({
+type UserModelType = Model<UserDoc, {}, UserMethods>;
+
+
+const userSchema = new Schema<UserDoc, UserModelType, UserMethods>({
    name:{type:String, trim: true,},
-   email:{type:String, trim: true, required:true, unique: true, },
+   email:{type:String, trim: true, required:true, unique: true, lowercase: true },
+   password:{type:String, required: true,},
    role:{type: String, enum:["user", "author"], default:"user",}, // enum  = allowed values only to improve  data consistency. 
     signedUp:{type: Boolean, default: false,},
     avatar:{type: Object, url: String, id: String},
@@ -29,6 +38,24 @@ const userSchema = new Schema<UserDoc>({
     orders:[{type: Schema.Types.ObjectId, ref:"Order"}],
 }); 
 
-const UserModel = model("User", userSchema);
+
+
+
+
+userSchema.pre("save", function (next) {
+  if (this.isModified("password") && this.password) {
+    console.log("🔐 Hashing password...");
+    const salt = genSaltSync(10);
+    this.password = hashSync(this.password, salt);
+  }
+  next;
+});
+
+userSchema.methods.comparePassword = function (password: string) {
+  console.log("🔍 Comparing password...");
+  return compareSync(password, this.password);
+};
+
+const UserModel = model<UserDoc, UserModelType>("User", userSchema);
 
 export default UserModel;

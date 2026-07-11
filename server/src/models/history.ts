@@ -1,4 +1,4 @@
-import { Model, ObjectId, Schema, model } from "mongoose";
+import { Model, Types, Schema, model } from "mongoose";
 
 export interface Settings {
   lastLocation: string;
@@ -6,8 +6,8 @@ export interface Settings {
 }
 
 interface HistoryDoc extends Settings {
-  book: ObjectId;
-  reader: ObjectId;
+  book: Types.ObjectId;
+  reader: Types.ObjectId;
 }
 
 const historySchema = new Schema<HistoryDoc>(

@@ -7,6 +7,7 @@ import { RequestHandler } from "express";
 import slugify  from "slugify";
 
 
+
 export const registerAuthor: RequestHandler = async(req, res) =>{
     
     const {body, user} = req; 

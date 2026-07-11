@@ -26,7 +26,15 @@ export interface BookDoc {
     size: string;
   };
 }
-
+export interface FormattableBook {
+  _id?: Types.ObjectId;
+  title: string;
+  slug: string;
+  genre: string;
+  price: { mrp: number; sale: number };
+  cover?: { url: string; id: string };
+  averageRating?: number;
+}
 const bookSchema = new Schema<BookDoc>({
   author: {
     type: Schema.Types.ObjectId,
@@ -108,11 +116,11 @@ const bookSchema = new Schema<BookDoc>({
   },
 });
 
-bookSchema.pre<BookDoc>("save", async function (next: any) {
-  const { mrp, sale } = this.price;
-  this.price = { mrp: mrp * 100, sale: sale * 100 };
-
-  next();
+bookSchema.pre("save", async function () {
+  if (this.isNew) {  // ← only multiply on first save, not every save
+    const { mrp, sale } = this.price;
+    this.price = { mrp: mrp * 100, sale: sale * 100 };
+  }
 });
 
 const BookModel = model("Book", bookSchema);
