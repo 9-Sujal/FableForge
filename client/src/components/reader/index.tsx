@@ -317,6 +317,7 @@ rendition.on("locationChanged", () => {
   }, [url, lastLocation, onLocationChanged]);
 
   // to handle window resize or resize the book container
+
   useEffect(() => {
     if (!rendition) return;
 
@@ -324,8 +325,8 @@ rendition.on("locationChanged", () => {
       setLoading(true);
 
       const { height, width } = getElementSize(wrapper);
-
-      if (!rendition || !rendition.manager) return;
+  const manager = (rendition as any).manager;
+      if ( !manager) return;
       rendition.resize(width, height);
     };
 
@@ -363,7 +364,7 @@ rendition.on("locationChanged", () => {
             />
             {/* Display Notes */}
             <Button
-              onClick={() => setShowNotes(true)}
+              onPress={() => setShowNotes(true)}
               variant="light"
               isIconOnly
             >

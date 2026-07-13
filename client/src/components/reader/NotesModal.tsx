@@ -1,15 +1,15 @@
 import { Card, CardBody, Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/react";
 import { useEffect, useState } from "react";
-import type { Book } from "../BookDetail";
 
+import type ePub from "epubjs";
 interface Props {
-  book: Book | null;
+  book: ePub.Book | null;
   notes?: string[];
   isOpen?: boolean;
   onClose?(): void;
   onNoteClick?(path: string): void;
 }
-interface BookWithRange extends Book {
+interface BookWithRange extends ePub.Book {
   getRange(cfi: string): Promise<Range>;
 }
 
