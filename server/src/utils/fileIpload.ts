@@ -42,9 +42,8 @@ export const uploadBookToAws = async (
   uniqueFileName: string,
   contentType: string = "image/png"
 ) => {
-    console.log("Uploading to bucket:", process.env.AWS_PUBLIC_BUCKET); // ← add
-  console.log("File key:", uniqueFileName); // ← add
-  console.log("Content type:", contentType); // ← add
+ 
+
   const putCommand = new PutObjectCommand({
     Bucket: process.env.AWS_PUBLIC_BUCKET,
     Key: uniqueFileName,
