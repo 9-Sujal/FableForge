@@ -157,6 +157,7 @@ export default function EpubReader({ url, title, lastLocation, highlights, onHig
   const [showToc, setShowToc] = useState(false);
   const [tableOfContent, setTableOfContent] = useState<BookNavList[]>([]);
   const [rendition, setRendition] = useState<Rendition>();
+  const [book, setBook] = useState<Book | null>(null);
   const [settings, setSettings] = useState({
     fontSize: 22,
     currentLocation: "",
@@ -249,9 +250,10 @@ rendition.on("locationChanged", () => {
   useEffect(() => {
     if (!url) return;
 
-    const book = new Book(url);
+    const epubBook = new Book(url);
+    setBook(epubBook);
     const { height, width } = getElementSize(wrapper);
-    const rendition = book.renderTo(container, {
+    const rendition = epubBook.renderTo(container, {
       width,
       height,
     });
@@ -301,7 +303,7 @@ rendition.on("locationChanged", () => {
       updatePageCounts(rendition);
     });
 
-    loadTableOfContent(book)
+    loadTableOfContent(epubBook)
       .then(setTableOfContent)
       .finally(() => {
         setLoading(false);
@@ -312,7 +314,7 @@ rendition.on("locationChanged", () => {
     });
 
     return () => {
-      if (book) book.destroy();
+       epubBook.destroy();
     };
   }, [url, lastLocation, onLocationChanged]);
 
@@ -325,8 +327,7 @@ rendition.on("locationChanged", () => {
       setLoading(true);
 
       const { height, width } = getElementSize(wrapper);
-  const manager = (rendition as any).manager;
-      if ( !manager) return;
+ 
       rendition.resize(width, height);
     };
 
@@ -412,7 +413,7 @@ rendition.on("locationChanged", () => {
       />
 
       <NotesModal
-        book={rendition?.book ?? null}
+        book={book}
         notes={highlights.map(({ selection }) => selection)}
         isOpen={showNotes}
         onClose={() => setShowNotes(false)}
