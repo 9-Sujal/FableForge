@@ -71,7 +71,9 @@ export default function ReadingPage() {
     }
   };
 const bookIdRef = useRef(bookId);
-bookIdRef.current = bookId;
+useEffect(() => {
+  bookIdRef.current = bookId;
+}, [bookId]);
   const handleLocationChanged = useCallback(
     (location: string) => {
       try {

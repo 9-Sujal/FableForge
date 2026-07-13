@@ -25,8 +25,6 @@ declare global {
 
 export const isAuth: RequestHandler = async (req, res, next) => {
 
-//   console.log("Cookies:", req.cookies);
-// console.log("Token:", req.cookies?.authToken);
 
    const authToken = req.cookies.authToken; //INSIDE COOKIE WE HAVE STORED THE TOKEN WHICH WE GOT FROM SERVER AFTER SUCCESSFULL LOGIN.
     //send error response if we dont have token in cookie.
@@ -39,8 +37,7 @@ export const isAuth: RequestHandler = async (req, res, next) => {
      })
    }
 
-//     console.log("Cookies:", req.cookies);
-// console.log("Token:", req.cookies?.authToken);
+
    //otherwise find out if the token is valid or signed by this server or not.
    const payload = jwt.verify(authToken, process.env.JWT_SECRET || "") as {userId: string};
 

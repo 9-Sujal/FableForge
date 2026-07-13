@@ -44,7 +44,7 @@ const userSchema = new Schema<UserDoc, UserModelType, UserMethods>({
 
 userSchema.pre("save", function (next) {
   if (this.isModified("password") && this.password) {
-    console.log("🔐 Hashing password...");
+
     const salt = genSaltSync(10);
     this.password = hashSync(this.password, salt);
   }
@@ -52,7 +52,7 @@ userSchema.pre("save", function (next) {
 });
 
 userSchema.methods.comparePassword = function (password: string) {
-  console.log("🔍 Comparing password...");
+
   return compareSync(password, this.password);
 };
 

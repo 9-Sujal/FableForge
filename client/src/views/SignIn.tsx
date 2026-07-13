@@ -28,7 +28,7 @@ export default function SignIn() {
 
       // Step 2: Get profile
       const res = await client.get("/auth/profile");
-      console.log("profile response:", res.data); 
+     
 
       // Step 3: Update Redux
       dispatch(updateProfile(res.data.profile));
@@ -36,9 +36,9 @@ export default function SignIn() {
 
       // Step 4: Redirect
       navigate("/");
-    } catch (err: any) {
-      console.error(err);
-      setError(err?.response?.data?.message || "Login failed");
+    } catch (err: unknown) {
+      
+      setError((err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Login failed");
       dispatch(updateAuthStatus("unauthenticated"));
     } finally {
       setBusy(false);

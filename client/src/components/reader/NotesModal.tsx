@@ -9,6 +9,10 @@ interface Props {
   onClose?(): void;
   onNoteClick?(path: string): void;
 }
+interface BookWithRange extends Book {
+  getRange(cfi: string): Promise<Range>;
+}
+
 export default function NotesModal({ book, notes, isOpen, onClose, onNoteClick }: Props) {
  const [data, setData] = useState<{ note: string; cfi: string }[]>([]);
 
@@ -17,7 +21,7 @@ export default function NotesModal({ book, notes, isOpen, onClose, onNoteClick }
 
     const newNotes = Promise.all(
       notes.map(async (cfi) => {
-        const note = (await (book as any).getRange(cfi)).toString();
+        const note = (await (book as BookWithRange).getRange(cfi)).toString();
         return { note, cfi };
       })
     );

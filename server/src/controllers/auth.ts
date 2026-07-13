@@ -102,9 +102,7 @@ declare global {
 
 export const verifyAuthToken: RequestHandler = tryCatch(async (req, res) =>{
     const {token, email} = req.query;
-     console.log("🔍 Verify API hit");
-  console.log("Token:", token);
-  console.log("email", email);
+     
     
 
     if(typeof token !== "string" || typeof email !== "string"){
@@ -118,17 +116,16 @@ export const verifyAuthToken: RequestHandler = tryCatch(async (req, res) =>{
  
      const verificationToken = await VerificationTokenModel.findOne({email}); 
 
-  console.log("DB Token:", verificationToken?.token);
      
      if(!verificationToken || !verificationToken.compare(token)){
-      console.log("❌ Token mismatch or not found");
+
         return sendErrorResponse({
             status:403,
             message:"invalid token or expired token",
             res,
         })
      }
-     console.log("✅ Token verified successfully for emailid:", email, token);
+
 
      return res.json({
     message: "Token valid",
@@ -178,7 +175,7 @@ export const verifyAuthToken: RequestHandler = tryCatch(async (req, res) =>{
 
 export const setPassword: RequestHandler = tryCatch(async(req, res) =>{
   const {email, token, password} = req.body; 
-  console.log("🔍 Set Password API hit");
+ 
 
   const verificationToken = await VerificationTokenModel.findOne({email});
   if(!verificationToken || !verificationToken.compare(token)){
@@ -218,7 +215,7 @@ const user = await UserModel.create({
 
 export const login: RequestHandler = tryCatch(async(req, res) =>{
   const {email, password} = req.body;
-  console.log("🔍 Login API hit with email:", email);
+ 
 
   const user = await UserModel.findOne({email});
 
@@ -295,8 +292,7 @@ export const logout: RequestHandler = (req, res) => {
 };
 
 export const updateProfile: RequestHandler = tryCatch(async (req, res) => {
-  console.log("BODY:", req.body);
-console.log("FILES:", req.files);
+
   const user = await UserModel.findByIdAndUpdate(
     req.user.id,
     {
@@ -333,8 +329,7 @@ console.log("FILES:", req.files);
     );
 
     await user.save();
-  console.log("BODY:", req.body);
-console.log("FILES:", req.files);
+ 
   }
 
   res.json({ profile: formatUserProfile(user) });

@@ -71,7 +71,7 @@ export const checkout: RequestHandler = async (req, res) => {
     },
     
   });
- console.log(razorpayOrder);
+
 
 
   // save razorpay order id to our order
@@ -87,7 +87,7 @@ export const checkout: RequestHandler = async (req, res) => {
     keyId: process.env.RAZORPAY_KEY_ID,
   });
   }catch(err){
-   console.log("RAZORPAY ERROR:");
+  
   console.dir(err, { depth: null });
 }
 };
