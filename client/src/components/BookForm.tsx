@@ -6,7 +6,7 @@ import {
   Autocomplete,
   AutocompleteItem,
   Button,
-  DatePicker,
+  
   Input,
   Radio,
   RadioGroup,
@@ -15,7 +15,7 @@ import { genreList, genres, languageList, languages } from "../utils/data";
 import { z } from "zod";
 import PosterSelector from "./PosterSelector";
 import RichEditor from "./rich-editor";
-import {parseDate} from "@internationalized/date"
+
 
 export interface InitialBookToUpdate {
   slug: string;
@@ -416,15 +416,16 @@ export default function BookForm({ initialState, title, submitBtnTitle, onSubmit
                 <p className="text-[11px] font-medium tracking-widest uppercase text-default-400 mb-1.5">
                   Publish Date <span className="text-amber-500">*</span>
                 </p>
-                <DatePicker
-                  onChange={(date) => {
-                    if (!date) return;
-                    setBookInfo({
-                      ...bookInfo,
-                      publishedAt: new Date(date).toISOString().split("T")[0],
-                    });
-                  }}
+                {/* <DatePicker<CalendarDate>
                   value={bookInfo.publishedAt ? parseDate(bookInfo.publishedAt) : null}
+  onChange={(date) => {
+    if (!date) return;
+                    setBookInfo((prev)=> ({
+                      ...prev,
+                      publishedAt: date.toString(), 
+                    }));
+                  }}
+                 
                   showMonthAndYearPickers
                   isRequired
                   variant="bordered"
@@ -443,7 +444,28 @@ export default function BookForm({ initialState, title, submitBtnTitle, onSubmit
   }}
                   isInvalid={!!errors?.publishedAt}
                   errorMessage={<ErrorList errors={errors?.publishedAt} />}
-                />
+                /> */}
+                <div>
+
+  <Input
+    type="date"
+    value={bookInfo.publishedAt || ""}
+    onChange={(e) =>
+      setBookInfo((prev) => ({
+        ...prev,
+        publishedAt: e.target.value,
+      }))
+    }
+    variant="bordered"
+    isRequired
+    isInvalid={!!errors?.publishedAt}
+    errorMessage={<ErrorList errors={errors?.publishedAt} />}
+    classNames={{
+      inputWrapper:
+        "border-default-200 hover:border-amber-400 focus-within:!border-amber-500",
+    }}
+  />
+</div>
               </div>
             </div>
 
@@ -451,7 +473,7 @@ export default function BookForm({ initialState, title, submitBtnTitle, onSubmit
               {/* Language */}
               <Autocomplete
                 label=""
-                labelPlacement="inside"
+                labelPlacement="outside"
                 placeholder="Language"
                 defaultSelectedKey={bookInfo.language}
                 selectedKey={bookInfo.language}
@@ -460,9 +482,7 @@ export default function BookForm({ initialState, title, submitBtnTitle, onSubmit
                 isInvalid={!!errors?.language}
                 errorMessage={<ErrorList errors={errors?.language} />}
                 isRequired
-                 classNames={{
-    label: "text-[11px] font-medium tracking-widest uppercase text-default-400",
-  }}
+               
   popoverProps={{
     classNames: {
       content: "bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/60 dark:border-white/10 shadow-xl rounded-xl",
@@ -486,9 +506,7 @@ export default function BookForm({ initialState, title, submitBtnTitle, onSubmit
                 isInvalid={!!errors?.genre}
                 errorMessage={<ErrorList errors={errors?.genre} />}
                 isRequired
-                 classNames={{
-    label: "text-[11px] font-medium tracking-widest uppercase text-default-400",
-  }}
+             
   popoverProps={{
     classNames: {
       content: "bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/60 dark:border-white/10 shadow-xl rounded-xl",
