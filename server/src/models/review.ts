@@ -1,8 +1,8 @@
-import { Model, ObjectId, Schema, model } from "mongoose";
+import { Model, Schema, Types, model } from "mongoose";
 
 interface ReviewDoc {
-  user: ObjectId;
-  book: ObjectId;
+  user: Types.ObjectId;
+  book: Types.ObjectId;
   rating: number;
   content?: string;
   createdAt: Date;
@@ -11,12 +11,12 @@ interface ReviewDoc {
 const reviewSchema = new Schema<ReviewDoc>(
   {
     user: {
-      type: Schema.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     book: {
-      type: Schema.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Book",
       required: true,
     },
