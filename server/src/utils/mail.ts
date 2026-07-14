@@ -62,6 +62,7 @@ const recipients = [
   }
 ];
 
+
 await client.send({
     from: sender,
     to: recipients,
