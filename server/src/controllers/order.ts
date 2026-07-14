@@ -45,9 +45,11 @@ export const getOrders: RequestHandler = async (req, res) => {
   });
 };
 
+interface Params {
+  bookId: string;
+}
 
-
-export const getOrderStatus: RequestHandler = async (req, res) => {
+export const getOrderStatus: RequestHandler<Params> = async (req, res) => {
   const { bookId } = req.params;
 
   let status = false;
