@@ -1,4 +1,4 @@
-import { Model, ObjectId, Schema, Types, model } from "mongoose";
+import { Model, Schema, Types, model } from "mongoose";
 
 export interface BookDoc {
   _id?: Types.ObjectId;
