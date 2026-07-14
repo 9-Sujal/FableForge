@@ -12,6 +12,7 @@
     "crypto": "^1.0.1",
     "epubjs": "^0.3.93",
     "jsonwebtoken": "^9.0.3",
+   
     "tailwind-merge": "^3.5.0"
   }
 }

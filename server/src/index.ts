@@ -40,7 +40,12 @@ app.use("/checkout", checkoutRouter);
 app.use("/order", orderRouter);
 
 const port = process.env.PORT || 8989;
-
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "FableForge API is running 🚀",
+  });
+});
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
