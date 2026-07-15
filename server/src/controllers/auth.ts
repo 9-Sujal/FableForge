@@ -248,7 +248,7 @@ export const login: RequestHandler = tryCatch(async(req, res) =>{
   );
 
  const isProduction = process.env.NODE_ENV === "production";
-
+console.log(process.env.NODE_ENV);
 res.cookie("authToken", token, {
   httpOnly: true,
   secure: isProduction,
