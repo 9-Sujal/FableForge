@@ -247,12 +247,15 @@ export const login: RequestHandler = tryCatch(async(req, res) =>{
     {expiresIn:"15d"}
   );
 
-  res.cookie("authToken", token, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+ const isProduction = process.env.NODE_ENV === "production";
 
-  })
+res.cookie("authToken", token, {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+  maxAge: 15 * 24 * 60 * 60 * 1000,
+  path: "/",
+});
 
   res.json({
     message:"Login successful",
@@ -281,13 +284,13 @@ export const sendProfileInfo: RequestHandler = (req, res) => {
 //  none and secure as true to make sure that the cookie is sent to the client.
 // we will also set the path of the cookie to "/" to make sure that the cookie is sent to all the routes in our application. if we do not set the path then the cookie will only be sent to the route which set the cookie and it will not be sent to other routes. so we have to set the path to "/" to make sure that the cookie is sent to all the routes in our application.
 export const logout: RequestHandler = (req, res) => {
-  const isDevModeOn = process.env.NODE_ENV === "development";
-  res.clearCookie("authToken", {
-      httpOnly: true,
-      secure: !isDevModeOn,
-      sameSite: isDevModeOn ? "strict" : "none",
-      path: "/",
-    })
+ const isProduction = process.env.NODE_ENV === "production";
+res.clearCookie("authToken", {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+  path: "/",
+})
     .send();
 };
 
