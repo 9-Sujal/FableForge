@@ -20,14 +20,14 @@ const app = express();
 
 app.use(morgan("dev"));
 app.use(cors({
-    origin:[process.env.APP_URL!],
+    origin:process.env.APP_URL!,
     credentials: true, 
 }))
 app.use(cookieParser()); 
-app.use("/payment", paymentRouter );
+
 app.use(express.urlencoded({extended: false})) 
 app.use(express.json());
-
+app.use("/payment", paymentRouter );
 
 app.use("/auth",authRouter);
 app.use("/author", authorRouter);
@@ -49,3 +49,4 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
