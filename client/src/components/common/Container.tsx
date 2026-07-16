@@ -19,7 +19,7 @@ export default function Container({ children }: Props) {
 
   if (readingMode) return children;
   return (
-       <div className="min-h-screen bg-violet-100/40 dark:bg-black backdrop-blur-xl transition-colors duration-500">
+       <div className="min-h-screen w-full overflow-x-hidden bg-violet-100/40 dark:bg-black backdrop-blur-xl transition-colors duration-500">
    <div className="absolute -top-24 -left-24 w-48 h-48 
                 bg-violet-400/30 blur-[80px] pointer-events-none 
                 dark:bg-cyan-500/20" />
@@ -38,7 +38,7 @@ export default function Container({ children }: Props) {
         </p>
       </div>
  
-      <div className="relative min-h-screen max-w-5xl mx-auto flex flex-col overflow-hidden">
+      <div className="relative min-h-screen max-w-5xl mx-auto flex flex-col px-4 md:px-8">
  
         {/* ambient glow accents — subtle, sits behind all content */}
         <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10">
