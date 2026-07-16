@@ -41,7 +41,7 @@ export default function BookList({ data, title }: Props) {
         {data.map((book) => {
           return (
             <Link key={book.id} as={RouterLink} to={`/book/${book.slug}`}>
-              <div className="flex w-full justify-center mb-3">
+    <div className="flex w-full flex-col items-center space-y-2">
                 <img
                   src={book.cover}
                   alt={book.title}
