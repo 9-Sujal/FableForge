@@ -37,15 +37,15 @@ export default function BookList({ data, title }: Props) {
 <div className="absolute -bottom-16 -right-16 w-40 h-40 
                 bg-sky-400/25 blur-[70px] pointer-events-none 
                 dark:bg-indigo-500/20" />
-      <div className="mt-6 p-4 grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 gap-5">
+        <div className="mt-6 p-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {data.map((book) => {
           return (
             <Link key={book.id} as={RouterLink} to={`/book/${book.slug}`}>
-              <div className="flex w-2xl flex-col items-center space-y-2">
+              <div className="flex w-full justify-center mb-3">
                 <img
                   src={book.cover}
                   alt={book.title}
-                  className="w-32 h-46.25 object-contain rounded"
+                  className="w-32 h-48 object-cover shadow-md rounded"
                 />
 
                 <div className="w-full space-y-2">
