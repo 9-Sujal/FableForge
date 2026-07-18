@@ -8,7 +8,7 @@ A modern full-stack eBook platform that enables users to discover, purchase, rea
 
 # 📚 FableForge
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge)](https://fableforge.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge)](https://www.fableforge.website)
 
 
 ---
@@ -88,66 +88,6 @@ A modern full-stack eBook platform that enables users to discover, purchase, rea
 * Razorpay
 * AWS S3
 * Mailtrap
-
----
-
-# 📸 Screenshots
-
-## Home Page
-
-
-
-```md
-![Home](./screenshots/home.png)
-```
-
----
-
-## Book Details
-
-```md
-![Book Details](./screenshots/book-details.png)
-```
-
----
-
-## Reader
-
-```md
-![Reader](./screenshots/reader.png)
-```
-
----
-
-## Notes & Highlights
-
-```md
-![Notes](./screenshots/notes.png)
-```
-
----
-
-## Author Dashboard
-
-```md
-![Dashboard](./screenshots/dashboard.png)
-```
-
----
-
-## Shopping Cart
-
-```md
-![Cart](./screenshots/cart.png)
-```
-
----
-
-## Orders
-
-```md
-![Orders](./screenshots/orders.png)
-```
 
 ---
 
