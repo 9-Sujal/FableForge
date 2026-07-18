@@ -15,11 +15,12 @@ import TableOfContents from "./TableOfContents";
 import HighlightOptions from "./HighlightOptions";
 import NotesModal from "./NotesModal";
 import { FaBackward } from "react-icons/fa";
-
+import axios from "axios"
 
 
 interface Props {
   url: string;
+  fileSize?: string;
   title?: string;
   lastLocation?: string;
   highlights: Highlight[];
