@@ -422,7 +422,7 @@ viewer?.addEventListener("touchend", (e) => {
 
         <Navigator
           side="left"
-          onPress={() => {
+          onClick={() => {
             rendition?.prev();
             hideToc();
           }}
@@ -430,7 +430,7 @@ viewer?.addEventListener("touchend", (e) => {
         />
         <Navigator
           side="right"
-          onPress={() => {
+          onClick={() => {
             rendition?.next();
             hideToc();
           }}
