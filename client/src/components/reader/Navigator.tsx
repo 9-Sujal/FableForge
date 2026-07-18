@@ -29,7 +29,7 @@ export default function Navigator({ side, className, onClick }: Props) {
         variant="bordered"
         isIconOnly
         className="dark:border-book-dark text-slate-950 bg-slate-100 opacity-50 border-2 hover:border-amber-300 dark:text-book-dark"
-        onPress={onClick}
+        onClick={onClick}
       >
         {icon} 
       </Button>
