@@ -311,6 +311,25 @@ rendition.on("locationChanged", () => {
 
     Promise.resolve().then(() => {
       setRendition(rendition);
+      let touchStartX = 0;
+
+const viewer = document.getElementById(container);
+
+viewer?.addEventListener("touchstart", (e) => {
+  touchStartX = e.touches[0].clientX;
+});
+
+viewer?.addEventListener("touchend", (e) => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+
+  if (Math.abs(diff) < 60) return;
+
+  if (diff > 0) {
+    rendition.next();
+  } else {
+    rendition.prev();
+  }
+});
     });
 
     return () => {
@@ -338,11 +357,30 @@ rendition.on("locationChanged", () => {
     };
   }, [rendition]);
 
+    useEffect(() => {
+    if (!rendition) return;
+
+    const handleKey = (e: KeyboardEvent) => {
+        if (e.key === "ArrowRight")
+            rendition.next();
+
+        if (e.key === "ArrowLeft")
+            rendition.prev();
+    };
+
+    window.addEventListener("keydown", handleKey);
+
+    return () =>
+        window.removeEventListener("keydown", handleKey);
+
+}, [rendition]);
+
+
   return (
-    <div className="h-screen flex flex-col group dark:bg-book-dark dark:text-book-dark">
+     <div className="h-screen overflow-hidden flex flex-col group dark:bg-book-dark dark:text-book-dark">
       <LoadingIndicator visible={loading} />
 
-      <div className="flex items-center h-14 shadow-md opacity-0 group-hover:opacity-100 transition">
+      <div className="flex items-center h-14 shadow-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
         <div>
             <Button className="  p-2 text-slate-950 dark:text-slate-100" >
                 <Link href="/">
@@ -384,7 +422,7 @@ rendition.on("locationChanged", () => {
 
         <Navigator
           side="left"
-          onClick={() => {
+          onPress={() => {
             rendition?.prev();
             hideToc();
           }}
@@ -392,11 +430,11 @@ rendition.on("locationChanged", () => {
         />
         <Navigator
           side="right"
-          onClick={() => {
+          onPress={() => {
             rendition?.next();
             hideToc();
           }}
-          className="opacity-0 group-hover:opacity-100"
+          className="opacity-50 group-hover:opacity-200"
         />
       </div>
 
@@ -420,7 +458,7 @@ rendition.on("locationChanged", () => {
         onNoteClick={handleOnNotesClick}
       />
 
-      <div className="h-10 flex items-center justify-center opacity-0 group-hover:opacity-100">
+  <div className="h-10 flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100">
         <div className="flex-1 text-center">
           <p>Page {`${page.start} - ${page.total}`}</p>
         </div>
