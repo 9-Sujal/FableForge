@@ -162,6 +162,9 @@ export default function EpubReader({ url, title, lastLocation, highlights, onHig
     fontSize: 22,
     currentLocation: "",
   });
+    const [progress,setProgress]=useState(0);
+const [downloaded,setDownloaded]=useState(0);
+const [totalSize, setTotalSize] = useState(0);
   const [page, setPage] = useState({
     start: 0,
     end: 0,
@@ -250,8 +253,30 @@ rendition.on("locationChanged", () => {
   useEffect(() => {
     if (!url) return;
 
-    const epubBook = new Book(url);
-    setBook(epubBook);
+  
+  let epubBook: Book | null = null;
+
+  const loadBook = async () => {
+    try {
+      setLoading(true);
+
+      const response = await axios.get(url, {
+        responseType: "arraybuffer",
+        onDownloadProgress: (event) => {
+          if (!event.total) return;
+
+          setProgress(Math.round((event.loaded * 100) / event.total));
+          setDownloaded(event.loaded);
+          setTotalSize(event.total);
+        },
+      });
+
+      epubBook = new Book(response.data);
+
+      setBook(epubBook);
+
+      //............................
+      
     const { height, width } = getElementSize(wrapper);
     const rendition = epubBook.renderTo(container, {
       width,
@@ -261,7 +286,7 @@ rendition.on("locationChanged", () => {
     if (lastLocation) rendition.display(lastLocation);
     else rendition.display();
 
-    // Registering The Theme Options
+   
     rendition.themes.register("light", LIGHT_THEME);
     rendition.themes.register("dark", DARK_THEME);
 
@@ -271,12 +296,11 @@ rendition.on("locationChanged", () => {
     );
     const debounceUpdateLoading = debounce(setLoading, 500);
 
-    // Let's listen if resized is finished
     rendition.on("resized", () => {
       debounceUpdateLoading(false);
     });
 
-    // Let's fire the on click if we click inside the book
+  
     rendition.on("click", () => {
       hideToc();
     });
@@ -303,39 +327,43 @@ rendition.on("locationChanged", () => {
       updatePageCounts(rendition);
     });
 
-    loadTableOfContent(epubBook)
-      .then(setTableOfContent)
-      .finally(() => {
-        setLoading(false);
-      });
+     await loadTableOfContent(epubBook)
+        .then(setTableOfContent)
+        .finally(() => {
+          setLoading(false);
+        });
 
-    Promise.resolve().then(() => {
       setRendition(rendition);
+
       let touchStartX = 0;
 
-const viewer = document.getElementById(container);
+      const viewer = document.getElementById(container);
 
-viewer?.addEventListener("touchstart", (e) => {
-  touchStartX = e.touches[0].clientX;
-});
+      viewer?.addEventListener("touchstart", (e) => {
+        touchStartX = e.touches[0].clientX;
+      });
 
-viewer?.addEventListener("touchend", (e) => {
-  const diff = touchStartX - e.changedTouches[0].clientX;
+      viewer?.addEventListener("touchend", (e) => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
 
-  if (Math.abs(diff) < 60) return;
+        if (Math.abs(diff) < 60) return;
 
-  if (diff > 0) {
-    rendition.next();
-  } else {
-    rendition.prev();
-  }
-});
-    });
+        if (diff > 0) rendition.next();
+        else rendition.prev();
+      });
 
-    return () => {
-       epubBook.destroy();
-    };
-  }, [url, lastLocation, onLocationChanged]);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+    }
+  };
+
+  loadBook();
+
+  return () => {
+    epubBook?.destroy();
+  };
+}, [url, lastLocation, onLocationChanged]);
 
   // to handle window resize or resize the book container
 
@@ -378,7 +406,12 @@ viewer?.addEventListener("touchend", (e) => {
 
   return (
      <div className="h-screen overflow-hidden flex flex-col group dark:bg-book-dark dark:text-book-dark">
-      <LoadingIndicator visible={loading} />
+        <LoadingIndicator
+    visible={loading}
+    progress={progress}
+    downloaded={downloaded}
+    total={totalSize}
+/>
 
       <div className="flex items-center h-14 shadow-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
         <div>
