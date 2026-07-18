@@ -208,7 +208,7 @@ export default function BookDetail({book}:BookProps) {
               radius="sm"
               className="bg-slate-200 dark:bg-slate-500 rounded-4xl "
               as={Link}
-              to={`/read/${slug}?title=${title}&id=${id}`}
+           to={`/read/${slug}?title=${title}&id=${id}&size=${encodeURIComponent(fileInfo.size)}`}
             >
               Read Now
             </Button>
