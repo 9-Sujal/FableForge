@@ -23,13 +23,13 @@ export default function Navigator({ side, className, onClick }: Props) {
   }
 
   return (
-    <div className={clsx("fixed top-3/4 transition", classesBySide, className)}>
+    <div className={clsx("fixed top-1/2 -transform-y-1/2 transition", classesBySide, className)}>
       <Button
         radius="full"
         variant="bordered"
         isIconOnly
         className="dark:border-book-dark text-slate-950 bg-slate-100 opacity-50 border-2 hover:border-amber-300 dark:text-book-dark"
-        onClick={onClick}
+        onPress={onClick}
       >
         {icon} 
       </Button>
