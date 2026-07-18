@@ -40,6 +40,7 @@ export default function ReadingPage() {
   const [searchParam] = useSearchParams();
   const title = searchParam.get("title");
   const bookId = searchParam.get("id");
+   const size = searchParam.get("size") || "";
 
   const handleOnHighlightSelection = (data: Highlight) => {
     try {
@@ -109,6 +110,7 @@ useEffect(() => {
    
       <EpubReader
         url={url}
+        fileSize={size}
         title={title || ""}
         highlights={settings.highlights}
         lastLocation={settings.lastLocation}
