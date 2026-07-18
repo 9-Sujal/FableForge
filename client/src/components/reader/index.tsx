@@ -460,7 +460,7 @@ rendition.on("locationChanged", () => {
             rendition?.prev();
             hideToc();
           }}
-          className="opacity-0 group-hover:opacity-100"
+          className="opacity-50 group-hover:opacity-200"
         />
         <Navigator
           side="right"
